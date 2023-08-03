@@ -2,7 +2,7 @@
 /*  Author		: Mohamed Samir		*/
 /*  SWC			: DIO				*/
 /*  Layer		: MCAL				*/
-/*  Version		: 1.0				*/
+/*  Version		: 1.1				*/
 /*  Date		: August 3, 2023	*/
 /*  Last Edit	: N/A				*/
 /************************************/
