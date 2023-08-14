@@ -105,14 +105,22 @@ int main(void)
 	HLCD_voidWriteCustom(L_Mchar,7);
 
 
+	HLCD_voidSetCursor(0,0);
 	HLCD_voidSendChar(0);
+	HLCD_voidSetCursor(0,1);
 	HLCD_voidSendChar(1);
+	HLCD_voidSetCursor(0,2);
 	HLCD_voidSendChar(2);
+	HLCD_voidSetCursor(0,3);
 	HLCD_voidSendChar(3);
 	HLCD_voidSendChar(' ');
+	HLCD_voidSetCursor(0,5);
 	HLCD_voidSendChar(4);
+	HLCD_voidSetCursor(0,6);
 	HLCD_voidSendChar(5);
+	HLCD_voidSetCursor(0,7);
 	HLCD_voidSendChar(6);
+	HLCD_voidSetCursor(0,8);
 	HLCD_voidSendChar(7);
 
 	while(1)

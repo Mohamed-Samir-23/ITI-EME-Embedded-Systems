@@ -144,7 +144,7 @@ LOAD c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr5\libgcc.a
 .rela.plt
  *(.rela.plt)
 
-.text           0x00000000     0x258e
+.text           0x00000000     0x25ce
  *(.vectors)
  .vectors       0x00000000       0x54 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/../../../../avr/lib/avr5/crtm32.o
                 0x00000000                __vectors
@@ -291,19 +291,19 @@ LOAD c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr5\libgcc.a
  .text.MDIO_stderrorGetPinValue
                 0x0000206a      0x140 ./MDIO_program.o
                 0x0000206a                MDIO_stderrorGetPinValue
- .text.main     0x000021aa      0x372 ./main.o
+ .text.main     0x000021aa      0x3b2 ./main.o
                 0x000021aa                main
- .text.libgcc   0x0000251c        0x0 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr5\libgcc.a(_exit.o)
- .text.libgcc   0x0000251c        0x0 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr5\libgcc.a(_copy_data.o)
- .text.libgcc   0x0000251c       0x38 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr5\libgcc.a(_prologue.o)
-                0x0000251c                __prologue_saves__
- .text.libgcc   0x00002554       0x36 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr5\libgcc.a(_epilogue.o)
-                0x00002554                __epilogue_restores__
-                0x0000258a                . = ALIGN (0x2)
+ .text.libgcc   0x0000255c        0x0 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr5\libgcc.a(_exit.o)
+ .text.libgcc   0x0000255c        0x0 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr5\libgcc.a(_copy_data.o)
+ .text.libgcc   0x0000255c       0x38 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr5\libgcc.a(_prologue.o)
+                0x0000255c                __prologue_saves__
+ .text.libgcc   0x00002594       0x36 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr5\libgcc.a(_epilogue.o)
+                0x00002594                __epilogue_restores__
+                0x000025ca                . = ALIGN (0x2)
  *(.fini9)
- .fini9         0x0000258a        0x0 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr5\libgcc.a(_exit.o)
-                0x0000258a                exit
-                0x0000258a                _exit
+ .fini9         0x000025ca        0x0 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr5\libgcc.a(_exit.o)
+                0x000025ca                exit
+                0x000025ca                _exit
  *(.fini9)
  *(.fini8)
  *(.fini8)
@@ -322,11 +322,11 @@ LOAD c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr5\libgcc.a
  *(.fini1)
  *(.fini1)
  *(.fini0)
- .fini0         0x0000258a        0x4 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr5\libgcc.a(_exit.o)
+ .fini0         0x000025ca        0x4 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr5\libgcc.a(_exit.o)
  *(.fini0)
-                0x0000258e                _etext = .
+                0x000025ce                _etext = .
 
-.data           0x00800060       0x40 load address 0x0000258e
+.data           0x00800060       0x40 load address 0x000025ce
                 0x00800060                PROVIDE (__data_start, .)
  *(.data)
  .data          0x00800060        0x0 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/../../../../avr/lib/avr5/crtm32.o
@@ -398,8 +398,8 @@ LOAD c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr5\libgcc.a
  *(.bss*)
  *(COMMON)
                 0x008000a0                PROVIDE (__bss_end, .)
-                0x0000258e                __data_load_start = LOADADDR (.data)
-                0x000025ce                __data_load_end = (__data_load_start + SIZEOF (.data))
+                0x000025ce                __data_load_start = LOADADDR (.data)
+                0x0000260e                __data_load_end = (__data_load_start + SIZEOF (.data))
 
 .noinit         0x008000a0        0x0
                 0x008000a0                PROVIDE (__noinit_start, .)
@@ -424,13 +424,13 @@ LOAD c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr5\libgcc.a
 .signature
  *(.signature*)
 
-.stab           0x00000000     0x17dc
+.stab           0x00000000     0x183c
  *(.stab)
  .stab          0x00000000      0xe10 ./HLCD_program.o
  .stab          0x00000e10      0x738 ./MDIO_program.o
                                 0x804 (size before relaxing)
- .stab          0x00001548      0x294 ./main.o
-                                0x33c (size before relaxing)
+ .stab          0x00001548      0x2f4 ./main.o
+                                0x39c (size before relaxing)
 
 .stabstr        0x00000000      0xb70
  *(.stabstr)

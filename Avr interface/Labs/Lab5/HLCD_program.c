@@ -20,11 +20,11 @@
 
 void HLCD_voidInit(void)
 {
-	MDIO_stderrorSetPortDirection(LCD_DATA_PORT,0xFF);
-	MDIO_stderrorSetPortValue(LCD_DATA_PORT,MDIO_LOW);
 	MDIO_stderrorSetPinDirection(LCD_CONTROL_PORT,LCD_RS_PIN,MDIO_OUTPUT);
 	MDIO_stderrorSetPinDirection(LCD_CONTROL_PORT,LCD_RW_PIN,MDIO_OUTPUT);
 	MDIO_stderrorSetPinDirection(LCD_CONTROL_PORT,LCD_E_PIN,MDIO_OUTPUT);
+	MDIO_stderrorSetPortDirection(LCD_DATA_PORT,0xFF);
+	MDIO_stderrorSetPortValue(LCD_DATA_PORT,MDIO_LOW);
 	HLCD_voidSendCmd(0x33);   /* Send command 0x33*/
 	HLCD_voidSendCmd(0x32);   /* Send command 0x32*/
 	HLCD_voidSendCmd(0x38);
@@ -98,6 +98,7 @@ void HLCD_voidWriteCustom(const char * ARG_ccharpString,u8 ARG_u8Location)
 		{
 			HLCD_voidSendChar(ARG_ccharpString[L_u8i]);
 		}
+
 		HLCD_voidSendCmd(0x02);/*return home*/
 
 	}
