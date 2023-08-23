@@ -119,9 +119,9 @@ void HLCD_voidClear(void)
 
 void HLCD_voidDisplayNumber(u8 ARG_u8Num)
 {
-
-char arr[17]={'0','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16'};
-
-HLCD_voidSendChar(arr[ARG_u8Num]);
-
+	/* String to hold the ascii result */
+	char Result[21];
+	/* 10 for decimal */
+	itoa((int)ARG_u8Num,Result,10);
+	HLCD_voidSendString(Result);
 }

@@ -71,4 +71,9 @@ STD_error_t MTIM_stderrorStopTimer(u8 ARG_u8TimerNo);
 STD_error_t MTIM_stderrorSetOCR(u8 ARG_u8TimerNo, u16 ARG_u16OCRValue);
 STD_error_t MTIM_stderrorTimerDelay(u8 ARG_u8TimerNo, u32 ARG_u32Delay);
 
+
+STD_error_t MTIM_stderrorGetTimerValue(u16 *ARG_u16pTimerValue, u8 ARG_u8TimerNo);
+STD_error_t MTIM_stderrorSetTimerValue(u8 ARG_u8TimerNo, u16 ARG_u16TimerValue);
+
+
 #endif 

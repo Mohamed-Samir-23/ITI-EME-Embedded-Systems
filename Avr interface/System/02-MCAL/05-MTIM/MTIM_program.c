@@ -18,6 +18,7 @@
 #include "MTIM_interface.h"
 
 static u8 MTIM_u8Timer0Clock;
+static u8 MTIM_u8Timer1Clock;
 
 static volatile u16 MTIM_u8Timer0OVfCount;
 
@@ -76,6 +77,19 @@ STD_error_t MTIM_stderrorIint(u8 ARG_u8TimerNo, u8 ARG_u8ClockSource, u8 ARG_u8M
 			}
 			case MTIM_TIMER1:
 			{
+				/*normal mode*/
+				CLEAR_BIT(MTIM_TCCR1A,MTIM_WGM10);
+				CLEAR_BIT(MTIM_TCCR1A,MTIM_WGM11);
+				CLEAR_BIT(MTIM_TCCR1B,MTIM_WGM12);
+				CLEAR_BIT(MTIM_TCCR1B,MTIM_WGM13);
+				
+				/*disconnected Mode HWPIN*/
+				CLEAR_BIT(MTIM_TCCR1A,MTIM_COM1A1);
+				CLEAR_BIT(MTIM_TCCR1A,MTIM_COM1A0);
+				CLEAR_BIT(MTIM_TCCR1A,MTIM_COM1B1);
+				CLEAR_BIT(MTIM_TCCR1A,MTIM_COM1B0);
+				
+				MTIM_u8Timer1Clock=ARG_u8ClockSource;
 				
 				
 				break;
@@ -203,7 +217,8 @@ STD_error_t MTIM_stderrorStartTimer(u8 ARG_u8TimerNo)
 			case MTIM_TIMER1:
 			{
 				
-				
+				MTIM_TCCR1B=(MTIM_TCCR1B&0xF8)|MTIM_u8Timer1Clock ;
+				L_stderrorError=E_OK;
 				break;
 			}
 			case MTIM_TIMER2:
@@ -243,7 +258,8 @@ STD_error_t MTIM_stderrorStopTimer(u8 ARG_u8TimerNo)
 			case MTIM_TIMER1:
 			{
 				
-				
+				MTIM_TCCR1B=(MTIM_TCCR1B&0xF8)|MTIM_CS_NO_CLOCK ;
+				L_stderrorError=E_OK;
 				break;
 			}
 			case MTIM_TIMER2:
@@ -427,6 +443,71 @@ void __vector_10(void)
 		
 		/* */
 		
+	}
+	
+}
+
+
+STD_error_t MTIM_stderrorGetTimerValue(u16 *ARG_u16pTimerValue, u8 ARG_u8TimerNo)
+{
+	
+	switch(ARG_u8TimerNo)
+	{
+		
+		case MTIM_TIMER0:
+		{
+			
+			*ARG_u16pTimerValue=MTIM_TCNT0;
+			L_stderrorError=E_OK;
+			break;
+		}
+		case MTIM_TIMER1:
+		{
+			
+			*ARG_u16pTimerValue=MTIM_TCNT1L;
+			L_stderrorError=E_OK;
+			break;
+		}
+		case MTIM_TIMER2:
+		{
+			
+			
+			break;
+		}
+		default:L_stderrorError=E_NOK;break;
+	}
+	
+	
+	
+	
+}
+STD_error_t MTIM_stderrorSetTimerValue(u8 ARG_u8TimerNo, u16 ARG_u16TimerValue)
+{
+	
+	switch(ARG_u8TimerNo)
+	{
+		
+		case MTIM_TIMER0:
+		{
+			
+			MTIM_TCNT0=(u8)ARG_u16TimerValue;
+			L_stderrorError=E_OK;
+			break;
+		}
+		case MTIM_TIMER1:
+		{
+			
+			MTIM_TCNT1L=ARG_u16TimerValue;
+			L_stderrorError=E_OK;
+			break;
+		}
+		case MTIM_TIMER2:
+		{
+			
+			
+			break;
+		}
+		default:L_stderrorError=E_NOK;break;
 	}
 	
 }

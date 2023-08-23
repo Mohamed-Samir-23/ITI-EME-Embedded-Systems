@@ -1,0 +1,15 @@
+/************************************/
+/*  Author		: Mohamed Samir		*/
+/*  SWC			: MTIM				*/
+/*  Layer		: MCAL				*/
+/*  Version		: 1.0				*/
+/*  Date		: August 17, 2023	*/
+/*  Last Edit	: N/V				*/
+/************************************/
+
+#ifndef	_MTIM_CONFIG_H_
+#define _MTIM_CONFIG_H_
+
+
+
+#endif 
