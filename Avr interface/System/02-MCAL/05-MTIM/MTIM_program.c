@@ -355,7 +355,7 @@ STD_error_t MTIM_stderrorTimerDelay(u8 ARG_u8TimerNo, u32 ARG_u32Delay)
 				
 				MTIM_u8Timer0OVfCount=((f32)ARG_u32Delay/1000)/L_f32OVFTime;
 
-				MTIM_u8Timer0Preload=256-((ARG_u32Delay/1000) % (u32)L_f32OVFTime);
+				MTIM_u8Timer0Preload=256-((ARG_u32Delay/1000) % (f32)L_f32OVFTime);
 				
 				MTIM_TCNT0=MTIM_u8Timer0Preload;
 				

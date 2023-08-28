@@ -4,7 +4,7 @@
 /*  Layer		: MCAL				*/
 /*  Version		: 1.0				*/
 /*  Date		: August 21, 2023	*/
-/*  Last Edit	: N/V				*/
+/*  Last Edit	: August 25, 2023	*/
 /************************************/
 
 
@@ -60,5 +60,12 @@
 
 #define 	IDEL 						0
 #define 	BUSY 						1
+
+#define 	RESELUTION_256				1 
+#define 	RESELUTION_1024				2 
+
+#define 	SINGLE_CHANNEL_ASYNC		1
+
+#define 	CHAINE_CHANNEL_ASYNC		2
 
 #endif 

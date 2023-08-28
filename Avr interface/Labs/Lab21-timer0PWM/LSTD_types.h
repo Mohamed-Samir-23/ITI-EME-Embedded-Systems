@@ -4,7 +4,7 @@
 /*  Layer		: LIB				*/
 /*  Version		: 1.1				*/
 /*  Date		: August 2, 2023	*/
-/*  Last Edit	: August 28, 2023	*/
+/*  Last Edit	: August 23, 2023	*/
 /************************************/
 
 #ifndef _LSTD_TYPES_H_
@@ -31,10 +31,7 @@ typedef enum
 	E_OK,
 	E_NULL_POINTER,
 	E_TIME_OUT,
-	E_BUSY_FUNCTION,
-	E_PARITY,
-	E_OVERRUN,
-	E_FRAME,
+	E_BUSY_FUNCTION
 	
 }STD_error_t;
 

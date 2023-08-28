@@ -4,7 +4,7 @@
 /*  Layer		: MCAL				*/
 /*  Version		: 1.0				*/
 /*  Date		: August 21, 2023	*/
-/*  Last Edit	: August 23, 2023	*/
+/*  Last Edit	: August 25, 2023	*/
 /************************************/
 
 
@@ -77,6 +77,19 @@
 #define Timer_Counter1_Overflow					7
 #define Timer_Counter1_Capture_Event			8
 
+
+typedef
+{
+	
+	u8* L_pu8Channel;
+	u16* L_pu16Result;
+	u8 L_u8Size;
+	void(*L_pvoidfNotificationFunction)(void);
+	
+}MADC_Chain_t;
+
+
+
 STD_error_t MADC_stderrorInit
 (
 	u8 ARG_u8RefVoltage, 
@@ -99,45 +112,9 @@ STD_error_t	MADC_stderrorStartConversionASync
 );
 
 
-/*
-void MADC_voidEnableADC
+STD_error_t	MADC_stderrorStartChainASync
 (
-	void
+	MADC_Chain_t* ARG_udtADCChain
 );
 
-void MADC_voidDisableADC
-(
-	void
-);
-
-void MADC_voidEnableInterrupt
-(
-	void
-);
-
-void MADC_voidDisableInterrupt
-(
-	void
-);
-
-STD_error_t	MADC_stderrorStartConversion
-(
-	u8 ARG_u8Channel
-);
-
-void MADC_voidFlagPolling
-(
-	void
-);
-
-void MADC_voidClearFlag
-(
-	void
-);
-
-STD_error_t MADC_voidSetTriggerSource
-(
-	u8 ARG_u8TriggerMode
-);
-*/
 #endif
