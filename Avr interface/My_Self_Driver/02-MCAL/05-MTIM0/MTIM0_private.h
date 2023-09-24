@@ -1,11 +1,11 @@
-/************************************/
-/*  Author		: Mohamed Samir		*/
-/*  SWC			: MTIM0				*/
-/*  Layer		: MCAL				*/
-/*  Version		: 1.0				*/
-/*  Date		: August 26, 2023	*/
-/*  Last Edit	: N/V				*/
-/************************************/
+/**************************************/
+/*  Author		: Mohamed Samir		  */
+/*  SWC			: MTIM0				  */
+/*  Layer		: MCAL				  */
+/*  Version		: 1.1				  */
+/*  Date		: August 26, 2023	  */
+/*  Last Edit	: September 01, 2023  */
+/**************************************/
 
 #ifndef	_MTIM0_PRIVATE_H_
 #define _MTIM0_PRIVATE_H_
@@ -26,15 +26,17 @@
 
 #define MTIM0_OCR0 				*((volatile u8 *)0x5C)
 
-#ifndef MTIM0_TIMSK
-#define MTIM0_TIMSK 			*((volatile u8 *)0x59)
+#ifndef MTIM_TIMSK
+#define MTIM_TIMSK 				*((volatile u8 *)0x59)
 #endif
+
 #define MTIM0_OCIE0 			1
 #define MTIM0_TOIE0 			0
 
 
-
-#define MTIM0_TIFR 				*((volatile u8 *)0x58)
+#ifndef MTIM_TIFR
+#define MTIM_TIFR 				*((volatile u8 *)0x58)
+#endif
 #define MTIM0_OCF0 				1
 #define MTIM0_TOV0 				0
 

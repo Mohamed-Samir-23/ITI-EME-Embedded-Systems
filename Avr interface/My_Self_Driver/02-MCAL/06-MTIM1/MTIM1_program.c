@@ -1,11 +1,11 @@
-/************************************/
-/*  Author		: Mohamed Samir		*/
-/*  SWC			: MTIM				*/
-/*  Layer		: MCAL				*/
-/*  Version		: 1.0				*/
-/*  Date		: August 26, 2023	*/
-/*  Last Edit	: N/V				*/
-/************************************/
+/**************************************/
+/*  Author		: Mohamed Samir		  */
+/*  SWC			: MTIM1				  */
+/*  Layer		: MCAL				  */
+/*  Version		: 1.0				  */
+/*  Date		: September 01, 2023  */
+/*  Last Edit	: N/V 				  */
+/**************************************/
 
 
 /* Library Includes */
@@ -17,77 +17,46 @@
 #include "MTIM1_private.h"
 #include "MTIM1_interface.h"
 
-static u8 MTIM0_u8TimerClock;
+static u8 MTIM1_u8TimerClock;
 
-static volatile u16 MTIM0_u8TimerCount;
+static volatile u16 MTIM1_u16TimerCountOVF;
 
-static volatile u8 MTIM0_u8TimerPreload;
+static volatile u16 MTIM1_u16TimerCountOCMA;
 
-void(*MTIM0_pvoidfUserFunctionOVF)(void)=NULL_POINTER;
+static volatile u16 MTIM1_u16TimerCountOCMB;
 
-void(*MTIM0_pvoidfUserFunctionOCM)(void)=NULL_POINTER;
+static volatile u16 MTIM1_u16TimerCountOICU;
 
-u32 MTIM0_u32Delay;
+static volatile u16 MTIM1_u16TimerPreload;
 
-STD_error_t MTIM0_stderrorInit(u8 ARG_u8ClockSource, u8 ARG_u8Mode, u8 ARG_u8HWPinMode)
+void(*MTIM1_pvoidfUserFunctionOVF)(void)=NULL_POINTER;
+
+void(*MTIM1_pvoidfUserFunctionOCMA)(void)=NULL_POINTER;
+
+void(*MTIM1_pvoidfUserFunctionOCMB)(void)=NULL_POINTER;
+
+void(*MTIM1_pvoidfUserFunctionICU)(void)=NULL_POINTER;
+
+
+u32 MTIM1_u32Delay;
+
+
+
+STD_error_t MTIM1_stderrorInit(u8 ARG_u8ClockSource, u8 ARG_u8Mode, u8 ARG_u8HWPin1Mode, ARG_u8HWPin2Mode)
 {
 	STD_error_t L_stderrorError=E_NOK;
 	
-	if((ARG_u8ClockSource>=0&&ARG_u8ClockSource<=7)&&(ARG_u8Mode>=0&&ARG_u8Mode<=3)&&(ARG_u8HWPinMode>=0&&ARG_u8HWPinMode<=3))
-	{
-		MTIM0_u8TimerClock = ARG_u8ClockSource;
-		
-		switch(ARG_u8Mode)
-		{
-			
-			case MTIM0_MODE_NORMAL			:CLEAR_BIT(MTIM0_TCCR0,MTIM0_WGM01);CLEAR_BIT(MTIM0_TCCR0,MTIM0_WGM00);	L_stderrorError=E_OK;break;
-			case MTIM0_MODE_PHASECORRECTPWM	:CLEAR_BIT(MTIM0_TCCR0,MTIM0_WGM01);SET_BIT(MTIM0_TCCR0,MTIM0_WGM00);	L_stderrorError=E_OK;break;
-			case MTIM0_MODE_CTC				:SET_BIT(MTIM0_TCCR0,MTIM0_WGM01);	CLEAR_BIT(MTIM0_TCCR0,MTIM0_WGM00);	L_stderrorError=E_OK;break;
-			case MTIM0_MODE_FASTPWM			:SET_BIT(MTIM0_TCCR0,MTIM0_WGM01);	SET_BIT(MTIM0_TCCR0,MTIM0_WGM00);	L_stderrorError=E_OK;break;
-			default 						:L_stderrorError=E_NOK;break;
-		}
-		
-		MTIM0_TCCR0=(MTIM0_TCCR0&MTIM0_HWPINFLAG)|ARG_u8HWPinMode;
-		
-		L_stderrorError=E_NOK;
-		
-	}
-	else
-	{
-		L_stderrorError=E_NOK;
-	}
-
-	
-	
-	return L_stderrorError;
-	
-}
-
-
-void MTIM0_voidForceOutputCompare(void)
-{
-	SET_BIT(MTIM0_TCCR0,MTIM0_F0C0);
-}
-
-
-
-STD_error_t MTIM0_stderrorEnableInterrupt(u8 ARG_u8InterruptSource)
-{
-	STD_error_t L_stderrorError=E_NOK;
-	
-	if(ARG_u8InterruptSource==MTIM0_INTERRUPT_OVF)
+	if((ARG_u8ClockSource>=0&&ARG_u8ClockSource<=7)&&(ARG_u8Mode>=0&&ARG_u8Mode<=15&&ARG_u8Mode!=13)&&(ARG_u8HWPin1Mode>=0&&ARG_u8HWPin1Mode<=3)&&(ARG_u8HWPin2Mode>=0&&ARG_u8HWPin2Mode<=3))
 	{
 		
-		SET_BIT(MTIM0_TIMSK,MTIM0_TOIE0);
+		MTIM1_u8TimerClock =ARG_u8ClockSource;
+		
+		/*Timer Mode AND HWPIN*/
+		MTIM1_TCCR1A=(MTIM1_TCCR1A&MTIM1_TIMERMODEFLAG1)|(ARG_u8Mode&0x03)|(ARG_u8HWPin1Mode<<MTIM1_COM1A0)|(ARG_u8HWPin2Mode<<MTIM1_COM1B0);
+		MTIM1_TCCR1B=(MTIM1_TCCR1B&MTIM1_TIMERMODEFLAG2)|((ARG_u8Mode&0x0C)<<MTIM1_WGM12);
+		
 		L_stderrorError=E_OK;
 
-	}
-	else if(ARG_u8InterruptSource==MTIM0_INTERRUPT_OCM)
-	{
-		
-		SET_BIT(MTIM0_TIMSK,MTIM0_OCIE0);
-		L_stderrorError=E_OK;
-		
 	}
 	else
 	{
@@ -97,24 +66,85 @@ STD_error_t MTIM0_stderrorEnableInterrupt(u8 ARG_u8InterruptSource)
 	return L_stderrorError;
 }
 
-STD_error_t MTIM0_stderrorDisableInterrupt(u8 ARG_u8InterruptSource)
+void MTIM1_voidForceAOutputCompare(void)
+{
+	SET_BIT(MTIM1_TCCR1A,MTIM1_FOC1A);
+}
+
+void MTIM1_voidForceBOutputCompare(void)
+{
+	SET_BIT(MTIM1_TCCR1A,MTIM1_FOC1B);
+}
+
+STD_error_t MTIM1_stderrorEnableInterrupt(u8 ARG_u8InterruptSource)
 {
 	
 	STD_error_t L_stderrorError=E_NOK;
 	
-	if(ARG_u8InterruptSource==MTIM0_INTERRUPT_OVF)
+	if(ARG_u8InterruptSource>=2&&ARG_u8InterruptSource<=5)
 	{
-		
-		CLEAR_BIT(MTIM0_TIMSK,MTIM0_TOIE0);
+		SET_BIT(MTIM_TIMSK,ARG_u8InterruptSource);
 		L_stderrorError=E_OK;
-
 	}
-	else if(ARG_u8InterruptSource==MTIM0_INTERRUPT_OCM)
+	else
 	{
 		
-		CLEAR_BIT(MTIM0_TIMSK,MTIM0_OCIE0);
-		L_stderrorError=E_OK;
+		L_stderrorError=E_NOK;
 		
+	}
+	
+	return L_stderrorError;
+}
+
+STD_error_t MTIM1_stderrorDisableInterrupt(u8 ARG_u8InterruptSource)
+{
+	
+	STD_error_t L_stderrorError=E_NOK;
+	
+	if(ARG_u8InterruptSource>=2&&ARG_u8InterruptSource<=5)
+	{
+		CLEAR_BIT(MTIM_TIMSK,ARG_u8InterruptSource);
+		L_stderrorError=E_OK;
+	}
+	else
+	{
+		
+		L_stderrorError=E_NOK;
+		
+	}
+	
+	return L_stderrorError;
+	
+}
+
+STD_error_t MTIM1_stderrorStartTimer(void)
+{
+	
+	STD_error_t L_stderrorError=E_NOK;
+	
+	if((MTIM1_u8TimerClock>=0&&MTIM1_u8TimerClock<=7))
+	{
+		MTIM1_TCCR1B=(MTIM1_TCCR1B&MTIM1_ClOCKFLAG)|MTIM1_u8TimerClock;
+		L_stderrorError=E_OK;
+	}
+	else
+	{
+		L_stderrorError=E_NOK;
+	}
+	
+	return L_stderrorError;
+	
+}
+
+STD_error_t MTIM1_stderrorStopTimer(void)
+{
+	
+	STD_error_t L_stderrorError=E_NOK;
+	
+	if((MTIM1_u8TimerClock>=0&&MTIM1_u8TimerClock<=7))
+	{
+		MTIM1_TCCR1B=MTIM1_TCCR1B&MTIM1_ClOCKFLAG;
+		L_stderrorError=E_OK;
 	}
 	else
 	{
@@ -124,164 +154,128 @@ STD_error_t MTIM0_stderrorDisableInterrupt(u8 ARG_u8InterruptSource)
 	return L_stderrorError;
 }
 
-STD_error_t MTIM0_stderrorStartTimer(void)
+void MTIM1_voidSetOCRA(u16 ARG_u16OCRValue)
+{
+	MTIM_OCR1AL=ARG_u16OCRValue;
+}
+
+void MTIM1_voidSetOCRB(u16 ARG_u16OCRValue)
+{
+	MTIM_OCR1BL=ARG_u16OCRValue;
+}
+
+void MTIM1_voidSetICR(u16 ARG_u16OCRValue)
+{
+	MTIM_ICR1L=ARG_u16OCRValue
+}
+
+STD_error_t MTIM1_stderrorTimerDelay(u8 ARG_u8InterruptSource, void (*ARG_pvoidfUserFunction)(void), u16 ARG_u16TopLimitInit, u32 ARG_u32Delay)
 {
 	
 	STD_error_t L_stderrorError=E_NOK;
-	
-	if((MTIM0_ClOCKFLAG>=0&&MTIM0_ClOCKFLAG<=7))
-	{
-		
-		MTIM0_TCCR0=(MTIM0_TCCR0&MTIM0_ClOCKFLAG)|MTIM0_u8TimerClock;
-		L_stderrorError=E_OK;
-	}
-	else
-	{
-		 L_stderrorError=E_NOK;
-		
-	}
-	
-	return L_stderrorError;
-}
 
-
-STD_error_t MTIM0_stderrorStopTimer(void)
-{
-	
-	STD_error_t L_stderrorError=E_NOK;
-	
-	if((MTIM0_ClOCKFLAG>=0&&MTIM0_ClOCKFLAG<=7))
-	{
-		MTIM0_TCCR0=MTIM0_TCCR0&MTIM0_ClOCKFLAG;
-		L_stderrorError=E_OK;
-	}
-	else
-	{
-		 L_stderrorError=E_NOK;
-		
-	}
-	
-	return L_stderrorError;
-	
-}
-
-
-void MTIM0_voidSetOCR(u8 ARG_u8OCRValue)
-{	
-	MTIM0_OCR0 =ARG_u8OCRValue;
-}
-
-STD_error_t MTIM0_stderrorTimerDelay(u8 ARG_u8InterruptSource, void (*ARG_pvoidfUserFunction)(void), u8 ARG_u8OSRInit, u32 ARG_u32Delay)
-{
-	STD_error_t L_stderrorError=E_NOK;
-	
 	if(ARG_pvoidfUserFunction!=NULL_POINTER)
 	{
-		if(MTIM0_u8TimerClock>=1&&MTIM0_u8TimerClock<=5)
+		if(MTIM1_u8TimerClock>=1&&MTIM1_u8TimerClock<=5)
 		{
-			MTIM0_u32Delay=ARG_u32Delay;
-			if(ARG_u8InterruptSource==MTIM0_INTERRUPT_OVF)
+			
+			MTIM1_u32Delay=ARG_u32Delay;
+			
+			switch(ARG_u8InterruptSource)
 			{
-				MTIM0_pvoidfUserFunctionOVF=ARG_pvoidfUserFunction;
 				
-				f32 L_u8PreScaler=0;
-				switch(MTIM0_u8TimerClock)
+				case MTIM1_INTERRUPT_OVF:
 				{
-					case MTIM0_CS_NO_CLOCK		: 	L_u8PreScaler=1;L_stderrorError=E_OK;break;
-					case MTIM0_CS_PRESCALAR_8	: 	L_u8PreScaler=8;L_stderrorError=E_OK;break;
-					case MTIM0_CS_PRESCALAR_64	: 	L_u8PreScaler=64;L_stderrorError=E_OK;break;
-					case MTIM0_CS_PRESCALAR_256	:	L_u8PreScaler=256;L_stderrorError=E_OK;break;
-					case MTIM0_CS_PRESCALAR_1024:	L_u8PreScaler=1024;L_stderrorError=E_OK;break;
-					default 					:	L_stderrorError=E_NOK;break;
+					MTIM1_pvoidfUserFunctionOVF=ARG_pvoidfUserFunction;
+					f32 L_u8PreScaler=0;
+					switch(MTIM1_u8TimerClock)
+					{
+						case MTIM0_CS_NO_CLOCK		: 	L_u8PreScaler=1;break;
+						case MTIM0_CS_PRESCALAR_8	: 	L_u8PreScaler=8;break;
+						case MTIM0_CS_PRESCALAR_64	: 	L_u8PreScaler=64;break;
+						case MTIM0_CS_PRESCALAR_256	:	L_u8PreScaler=256;break;
+						case MTIM0_CS_PRESCALAR_1024:	L_u8PreScaler=1024;break;
+						default 					:	break;
+					}
+					
+					f32 L_f32TickTime=L_u8PreScaler/(f32)F_CPU;
+				
+					f32 L_f32OverFlowTime=L_f32TickTime*65536.0;
+					
+					MTIM1_u16TimerCountOVF=((f32)ARG_u32Delay/1000)/L_f32OverFlowTime;
+					
+					f64 L_f64TimerPreload=((f32)ARG_u32Delay/1000)/L_f32OverFlowTime;
+					
+					L_f64TimerPreload=L_f64TimerPreload-MTIM1_u16TimerCountOVF;
+					
+					MTIM1_u16TimerPreload=(u16)(65536*((f32)1-(L_f64TimerPreload)));
+				
+					MTIM_TCNT1L=MTIM1_u16TimerPreload;
+					
+					MTIM_OCR1AL =ARG_u16TopLimitInit;
+					
+					L_stderrorError=E_OK;
+					
+				}
+				case MTIM1_INTERRUPT_OCMB:
+				{
+					MTIM1_pvoidfUserFunctionOCMB=ARG_pvoidfUserFunction;
+					MTIM_TCNT1L=0;
+					MTIM1_u16TimerCountOCMB=(ARG_u32Delay*1000)/ARG_u8OSRInit;
+					MTIM_OCR1BL =ARG_u16TopLimitInit;
+				}
+				case MTIM1_INTERRUPT_OCMA:
+				{
+					
+					MTIM1_pvoidfUserFunctionOCMA=ARG_pvoidfUserFunction;
+					MTIM_OCR1AL=ARG_u16TopLimitInit;
+					
+					
+					
+				}
+				case MTIM1_INTERRUPT_ICU:
+				{
+					
+					MTIM1_pvoidfUserFunctionICU;
+					MTIM_ICR1L =ARG_u16TopLimitInit;
+				
+				}
+				default :
+				{
+					
+					L_stderrorError=E_NOK;
+					break;
+					
 				}
 				
-				f32 L_f32TickTime=L_u8PreScaler/(f32)F_CPU;
 				
-				f32 L_f32OverFlowTime=L_f32TickTime*256.0;
-				
-				MTIM0_u8TimerCount=((f32)ARG_u32Delay/1000)/L_f32OverFlowTime;
-				
-				f64 L_f64TimerPreload=((f32)ARG_u32Delay/1000)/L_f32OverFlowTime;
-				
-				L_f64TimerPreload=L_f64TimerPreload-MTIM0_u8TimerCount;
-				
-				MTIM0_u8TimerPreload=256*((f32)1-(L_f64TimerPreload));
-			
-				MTIM0_TCNT0=MTIM0_u8TimerPreload;
-				
-				MTIM0_OCR0 =ARG_u8OSRInit;
-				
-				L_stderrorError=E_OK;
 			}
-			else if(ARG_u8InterruptSource==MTIM0_INTERRUPT_OCM)
-			{
-				MTIM0_pvoidfUserFunctionOCM=ARG_pvoidfUserFunction;
-				MTIM0_TCNT0=0;
-				MTIM0_OCR0 =ARG_u8OSRInit;
-				MTIM0_u8TimerCount=(ARG_u32Delay*1000)/ARG_u8OSRInit;
-				L_stderrorError=E_OK;
-			}
-			else
-			{
-				L_stderrorError=E_NOK;
-			}
-				
+
 		}
 		else
 		{
+			
 			L_stderrorError=E_NOK;
+			
 		}
-	
+		
 		
 	}
 	else
 	{
-		 L_stderrorError=E_NULL_POINTER;
-		
+		L_stderrorError=E_NULL_POINTER;
 	}
 	
 	return L_stderrorError;
-	
-	
 }
 
+STD_error_t	MTIM1_stderrorFASTPWM(u8 ARG_FastPwmMode,u8 ARG_u8ClockSource, u8 ARG_u8DutyCycle, u8 ARG_u8HWPin1Mode, ARG_u8HWPin2Mode);
 
-STD_error_t	MTIM0_stderrorFASTPWM(u8 ARG_u8ClockSource, u8 ARG_u8DutyCycle, u8 ARG_u8HWPinMode)
-{
-	STD_error_t L_stderrorError=E_NOK;
-	
-	if((MTIM0_ClOCKFLAG>=0&&MTIM0_ClOCKFLAG<=7))
-	{
-		if(ARG_u8HWPinMode==MTIM0_HWPIN_NOVINVERTING_PWM)
-		{
-			MTIM0_OCR0 =256*(ARG_u8DutyCycle/100.0);
-			MTIM0_TCCR0=(MTIM0_TCCR0&MTIM0_ClOCKFLAG)|MTIM0_u8TimerClock;
-			L_stderrorError=E_NOK;			
-		}
-		else if((ARG_u8HWPinMode==MTIM0_HWPIN_INVERTING_PWM)
-		{
-			MTIM0_OCR0=((f32)1-(ARG_u8DutyCycle/100.0))*256;
-			MTIM0_TCCR0=(MTIM0_TCCR0&MTIM0_ClOCKFLAG)|MTIM0_u8TimerClock;	
-			L_stderrorError=E_NOK;
-		}
-		else
-		{
-			
-			L_stderrorError=E_NOK;
-			
-		}
-		
-	}
-	else
-	{
-		
-		
-		L_stderrorError=E_NOK;
-		
-		
-	}
-			
-}
+STD_error_t MTIM1_stderrorGetTimerValue(u16 *ARG_u16pTimerValue);
+
+void MTIM1_voidSetTimerValue(u16 ARG_u16TimerValue);
+
+STD_error_t	MTIM1_stderrorPHASECORRECT(u8 ARG_PhaseCorrectMode, u8 ARG_u8ClockSource, u8 ARG_u8DutyCycle, u8 ARG_u8HWPin1Mode, ARG_u8HWPin2Mode);
 
 
 void __vector_11(void) __attribute__((signal));

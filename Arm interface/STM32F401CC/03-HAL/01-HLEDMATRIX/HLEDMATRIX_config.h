@@ -1,0 +1,50 @@
+/****************************************/
+/*  Author		: Mohamed Samir			*/
+/*  SWC			: LED MATRIX			*/
+/*  Layer		: HAL					*/
+/*  Version		: 1.0					*/
+/*  Date		: September 23, 2023	*/
+/*  Last Edit	: N/A					*/
+/****************************************/
+
+
+
+#ifndef _HLEDMATRIX_CONFIG_H_
+#define _HLEDMATRIX_CONFIG_H_
+
+
+#define HLEDMATRIX_CLKSRC				HSI
+#define HLEDMATRIX_AHBPRESCALER			AHB_PreScaler2
+#define HLEDMATRIX_APB1PRESCALER		APB_PreScaler2
+#define HLEDMATRIX_APB2PRESCALER		APB_PreScaler2
+
+#define HLEDMATRIX_SYSTICK_CLkSRC		AHB_DIV_8
+
+#define HLEDMATRIX_PERIPHERALCLK_ROW	AHB1,GPIOB_PER
+#define HLEDMATRIX_ROW0_PIN				GPIOB,PIN0
+#define HLEDMATRIX_ROW1_PIN				GPIOB,PIN1
+#define HLEDMATRIX_ROW2_PIN				GPIOB,PIN2
+#define HLEDMATRIX_ROW3_PIN				GPIOB,PIN3
+#define HLEDMATRIX_ROW4_PIN				GPIOB,PIN4
+#define HLEDMATRIX_ROW5_PIN				GPIOB,PIN5
+#define HLEDMATRIX_ROW6_PIN				GPIOB,PIN6
+#define HLEDMATRIX_ROW7_PIN				GPIOB,PIN7
+
+
+#define HLEDMATRIX_PERIPHERALCLK_COL	AHB1,GPIOA_PER
+#define HLEDMATRIX_COL0_PIN				GPIOA,0U
+#define HLEDMATRIX_COL1_PIN				GPIOA,1U
+#define HLEDMATRIX_COL2_PIN				GPIOA,2U
+#define HLEDMATRIX_COL3_PIN				GPIOA,3U
+#define HLEDMATRIX_COL4_PIN				GPIOA,4U
+#define HLEDMATRIX_COL5_PIN				GPIOA,5U
+#define HLEDMATRIX_COL6_PIN				GPIOA,6U
+#define HLEDMATRIX_COL7_PIN				GPIOA,7U
+
+
+ 
+
+
+
+
+#endif

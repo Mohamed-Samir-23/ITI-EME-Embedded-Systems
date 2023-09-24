@@ -13,8 +13,8 @@
 #include "LSTD_types.h"
 
 /* SWC Include */
-#include "MUSART_private.h"
 #include "MUSART_config.h"
+#include "MUSART_private.h"
 #include "MUSART_interface.h"
 
 static u8 MUSART_u8SendBusyState=MUSART_IDEL;
@@ -94,8 +94,9 @@ STD_error_t MUSART_stderrorInit
 		MUSART_UCSRC=(1<<MUSART_URSEL)|(MUSART_UCSRC&UCSRCFRAMEFLAG)|((ARG_u8DataFrame&ARGDATAFRAMEFLAG1)<<MUSART_UCSZ0)|(ARG_u8ParityFrame<<MUSART_UPM0)|(ARG_u8StopFrame<<MUSART_USBS)|ARG_ClockPolarity;
 		MUSART_UCSRB=(MUSART_UCSRB&DATAFRAMEFLAG)|(ARG_u8DataFrame&ARGDATAFRAMEFLAG2);
 		MUSART_DataBit=ARG_u8DataFrame;
-		MUSART_UBRRH=(u8)((((u16)UBRR)>>8)&BaudRateFLAG);
 		
+		CLEAR_BIT(MUSART_UCSRC,MUSART_URSEL);
+		MUSART_UBRRH=(u8)((((u16)UBRR)>>8)&BaudRateFLAG);
 		MUSART_UBRRL =(u8)UBRR;
 		
 		/*EnableMode*/
@@ -123,54 +124,47 @@ STD_error_t	MUSART_stderrorSendDataSync
 	u16 ARG_u16Data
 )
 {
-	
+
 	STD_error_t L_stderrorError=E_NOK;
-	
+
 	u32 L_u8TimeOutCounter =0;
-	
+
 	while((GET_BIT(MUSART_UCSRA,MUSART_UDRE)==0)&&(L_u8TimeOutCounter!=MUSART_TIMEOUT))
 	{
-		
+
 		L_u8TimeOutCounter++;
-		
+
 	}
-	
-	if(L_u8TimeOutCounter==MUSART_TIMEOUT)
+
+	if((L_u8TimeOutCounter)==(MUSART_TIMEOUT))
 	{
 		L_stderrorError=E_TIME_OUT;
 	}
 	else
 	{
-		
+
 		if(MUSART_DataBit==MUSART_9BIT_DATA)
 		{
-			
+
 			MUSART_UCSRB=(MUSART_UCSRB&ARGDATAFRAMEFLAG3)|GET_BIT(ARG_u16Data,8);
-			
+
 			MUSART_UDR|=(u8)ARG_u16Data;
-			
+
 			L_stderrorError=E_NOK;
-			
+
 		}
 		else if(MUSART_DataBit<=3)
 		{
-			
 			MUSART_UDR=(u8)ARG_u16Data;
-			
 			L_stderrorError=E_NOK;
-			
 		}
 		else
 		{
-			
 			L_stderrorError=E_NOK;
-			
 		}
-		
-		
-		
+
 	}
-	
+
 	return L_stderrorError;
 }
 
@@ -182,35 +176,35 @@ STD_error_t	MUSART_stderrorSendDataASync
 	void (*ARG_pvoidfNotificationFunction)(void)
 )
 {
-	
+
 	STD_error_t L_stderrorError=E_NOK;
-	
+
 	if(MUSART_u8SendBusyState==MUSART_IDEL)
 	{
 		if(ARG_pvoidfNotificationFunction!=NULL_POINTER)
 		{
 			MUSART_u8SendBusyState=MUSART_BUSY;
-			
+
 			MUSART_pu16DataTSoend=ARG_u16Data;
-			
+
 			MUSART_pvoidfSendNotificationFunction=ARG_pvoidfNotificationFunction;
-			
+
 			SET_BIT(MUSART_UCSRB, MUSART_UDRIE);
 		}
 		else
 		{
-			
+
 			L_stderrorError=E_NULL_POINTER;
-			
-			
+
+
 		}
-	
+
 	}
 	else
 	{
 		L_stderrorError =E_BUSY_FUNCTION;
 	}
-	
+
 
 	return L_stderrorError;
 }
@@ -220,31 +214,33 @@ STD_error_t	MUSART_stderrorSendDataASync
 
 STD_error_t	MUSART_stderrorReadDataSync
 (
-	u16* ARG_u16Data
+	u16* ARG_pu16Data
 )
 {
-	
+
 	STD_error_t L_stderrorError=E_NOK;
 	
-	if(ARG_u16Data!=NULL_POINTER)
+
+	if(ARG_pu16Data!=NULL_POINTER)
 	{
 		u32 L_u8TimeOutCounter =0;
-		
-		while((GET_BIT(MUSART_UCSRA,MUSART_RXC)==0)&&(L_u8TimeOutCounter!=MUSART_TIMEOUT))
+
+		while((GET_BIT(MUSART_UCSRA,MUSART_RXC)==0)&&(L_u8TimeOutCounter!=MSPI_TIMEOUT))
 		{
-			
-			L_u8TimeOutCounter++;MUSART_UDR
-			
+
+			//L_u8TimeOutCounter++;
+
 		}
 		
 		if(L_u8TimeOutCounter==MUSART_TIMEOUT)
 		{
-			
+
 			L_stderrorError=E_TIME_OUT;
 			
 		}
 		else
 		{
+			
 			if((GET_BIT(MUSART_UCSRA,MUSART_FE)==1))
 			{
 				L_stderrorError=E_FRAME;
@@ -255,39 +251,40 @@ STD_error_t	MUSART_stderrorReadDataSync
 			}
 			else if(GET_BIT(MUSART_UCSRA,MUSART_PE)==1)
 			{
-				
+
 				L_stderrorError=E_PARITY;
 			}
 			else
 			{
 				if(MUSART_DataBit==MUSART_9BIT_DATA)
 				{
-					*ARG_u16Data=0;
-					
-					*ARG_u16Data=(GET_BIT(MUSART_UCSRB,MUSART_RXB8)<<8);
-					
-					*ARG_u16Data|=(u16)MUSART_UDR;
-					
+					*ARG_pu16Data=0;
+
+					*ARG_pu16Data=(GET_BIT(MUSART_UCSRB,MUSART_RXB8)<<8);
+
+					*ARG_pu16Data|=(u16)MUSART_UDR;
+
 					L_stderrorError=E_NOK;
-					
+
 				}
 				else if(MUSART_DataBit<=3)
 				{
-					
-					*ARG_u16Data=(u16)MUSART_UDR;
-					
+
+					*ARG_pu16Data=(u16)MUSART_UDR;
+
+
 					L_stderrorError=E_NOK;
-					
+
 				}
 				else
 				{
-					
+
 					L_stderrorError=E_NOK;
-					
+
 				}
-				
+
 			}
-			
+
 		}
 	}
 	else
@@ -301,41 +298,41 @@ STD_error_t	MUSART_stderrorReadDataSync
 
 STD_error_t	MUSART_stderrorReadDataASync
 (
-	u16* ARG_u16Data,
+	u16* ARG_pu16Data,
 	void (*ARG_pvoidfNotificationFunction)(void)
 )
 {
 	STD_error_t L_stderrorError=E_NOK;
-	
+
 	if(MUSART_u8ReadBusyState==MUSART_IDEL)
 	{
-		if(ARG_u16Data!=NULL_POINTER&&ARG_pvoidfNotificationFunction!=NULL_POINTER)
+		if(ARG_pu16Data!=NULL_POINTER&&ARG_pvoidfNotificationFunction!=NULL_POINTER)
 		{
 			MUSART_u8ReadBusyState=MUSART_BUSY;
-			
+
 			MUSART_pvoidfReceiveNotificationFunction=ARG_pvoidfNotificationFunction;
-			MUSART_pu16Reading=ARG_u16Data;
+			MUSART_pu16Reading=ARG_pu16Data;
 			SET_BIT(MUSART_UCSRB, MUSART_RXCIE);
 		}
 		else
 		{
-			
+
 			L_stderrorError=E_NULL_POINTER;
-			
+
 		}
-	
+
 	}
 	else
 	{
-		
-		
+
+
 		L_stderrorError =E_BUSY_FUNCTION;
-		
+
 	}
-	
-	
+
+
 	return L_stderrorError;
-	
+
 }
 
 
@@ -345,7 +342,7 @@ void __vector_13(void)
 	if(MUSART_pu16Reading!=NULL_POINTER&&MUSART_pvoidfReceiveNotificationFunction!=NULL_POINTER)
 	{
 		MUSART_u8ReadBusyState=MUSART_IDEL;
-		
+
 		if((GET_BIT(MUSART_UCSRA,MUSART_FE)==1))
 		{
 
@@ -356,7 +353,7 @@ void __vector_13(void)
 		}
 		else if(GET_BIT(MUSART_UCSRA,MUSART_PE)==1)
 		{
-			
+
 
 		}
 		else
@@ -364,9 +361,9 @@ void __vector_13(void)
 			if(MUSART_DataBit==MUSART_9BIT_DATA)
 			{
 				*MUSART_pu16Reading=0;
-				
+
 				*MUSART_pu16Reading=(GET_BIT(MUSART_UCSRB,MUSART_RXB8)<<8);
-				
+
 				*MUSART_pu16Reading|=(u16)MUSART_UDR;
 
 			}
@@ -376,16 +373,16 @@ void __vector_13(void)
 			}
 			else
 			{
-				
 
-				
+
+
 			}
-			
+
 			MUSART_pvoidfReceiveNotificationFunction();
 			/*disable Interrupt*/
 			CLEAR_BIT(MUSART_UCSRB, MUSART_RXCIE);
-			
-		}	
+
+		}
 	}
 }
 
@@ -398,30 +395,47 @@ void __vector_14(void)
 		MUSART_u8SendBusyState=MUSART_IDEL;
 		if(MUSART_DataBit==MUSART_9BIT_DATA)
 		{
-			
+
 			MUSART_UCSRB=(MUSART_UCSRB&ARGDATAFRAMEFLAG3)|GET_BIT(MUSART_pu16DataTSoend,8);
-			
+
 			MUSART_UDR|=(u8)MUSART_pu16DataTSoend;
-				
+
 		}
 		else if(MUSART_DataBit<=3)
 		{
-			
-			MUSART_UDR=(u8)MUSART_pu16DataTSoend;
-			
 
-			
+			MUSART_UDR=(u8)MUSART_pu16DataTSoend;
+
+
+
 		}
 		else
 		{
-			
 
-			
+
+
 		}
-		
+
 		MUSART_pvoidfSendNotificationFunction();
 		/*disable Interrupt*/
 		CLEAR_BIT(MUSART_UCSRB, MUSART_UDRIE);
-		
+
 	}
+}
+
+void MUSART_voidSendStringSync
+(
+	const char* ARG_ccharpString
+)
+{
+	
+	u32 L_u32i=0;
+	do
+	{
+		
+		MUSART_stderrorSendDataSync(ARG_ccharpString[L_u32i]);
+		L_u32i++;
+		
+	}while(ARG_ccharpString[L_u32i]!='\0');
+	
 }
